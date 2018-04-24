@@ -1,0 +1,23 @@
+language: php
+
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+
+sudo: false
+
+cache:
+  directories:
+    - "$HOME/.composer/cache"
+
+before_script:
+  - composer create-project drupal-composer/drupal-project:8.x-dev some-dir --stability dev --no-interaction
+  - cd some-dir
+  - composer require szeidler/composer-patches-cli:dev-master
+
+script:
+  - composer patch-enable --file=patches.json
+  - composer patch-add drupal/core "SA-CORE-2018-002" "https://cgit.drupalcode.org/drupal/rawdiff/?h=8.5.x&id=5ac8738fa69df34a0635f0907d661b509ff9a28f"
+  - composer install
