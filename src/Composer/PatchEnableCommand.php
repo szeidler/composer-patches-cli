@@ -35,7 +35,7 @@ class PatchEnableCommand extends BaseCommand {
     // Create patch file if not existing.
     $patches_file = new JsonFile($patches_filename);
     if (!$patches_file->exists()) {
-      copy(dirname(__FILE__ ) . '/../Fixtures/composer.patches.json.dist', $patches_filename);
+      copy(dirname(__FILE__ ) . '/../Fixtures/composer.patches.json', $patches_filename);
       $output->writeln('The composer patches file was created.');
     }
 
