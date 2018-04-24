@@ -6,7 +6,7 @@ The Composer Patches CLI provides a simple CLI for [cweagans/composer-patches](h
 
 ## Requirements
 
-* PHP 5.6.0 or greater (PHP 7 recommended)
+* PHP 7.0 or greater
 * Composer
 
 ## Installation
