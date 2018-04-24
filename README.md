@@ -15,7 +15,21 @@ Add Composer Patches CLI as a composer dependency.
 
 ## Usage
 
-The CLI currently supports a patch-add command. It accepts the following arguments.
+### Patch Enable
+
+The patch enable function enables the patching functionality in your root composer.json and creates a patch file if not existing.
+
+The patch enable command accepts the following options.
+
+* `--file` Filename of the composer patch file to be created.
+
+```sh
+composer patch-enable  
+```
+
+### Patch Add
+
+The patch add command accepts the following arguments.
 
 * `--package` Name of the package to patch.
 * `--description` Description of the patch to be used.
