@@ -1,0 +1,15 @@
+{
+  "name": "szeidler/composer-patches-cli",
+  "type": "composer-plugin",
+  "require": {
+    "composer-plugin-api": "^1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "szeidler\\ComposerPatchesCLI\\": "src"
+    }
+  },
+  "extra": {
+    "class": "szeidler\\ComposerPatchesCLI\\Composer\\Plugin"
+  }
+}
