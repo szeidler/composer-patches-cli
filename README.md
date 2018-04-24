@@ -21,10 +21,10 @@ The patch enable function enables the patching functionality in your root compos
 
 The patch enable command accepts the following options.
 
-* `--file` Filename of the composer patch file to be created.
+* `--file` Filename of the composer patch file to be created (default: composer.patches.json')
 
 ```sh
-composer patch-enable  
+composer patch-enable --file='patches.json'  
 ```
 
 ### Patch Add
