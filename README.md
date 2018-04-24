@@ -9,6 +9,8 @@ The Composer Patches CLI provides a simple CLI for [cweagans/composer-patches](h
 
 ## Installation
 
+[![Build Status](https://travis-ci.org/szeidler/composer-patches-cli.svg?branch=master)](https://travis-ci.org/szeidler/composer-patches-cli)
+
 Add Composer Patches CLI as a composer dependency.
 
 `composer require szeidler/composer-patches-cli:dev-master`
