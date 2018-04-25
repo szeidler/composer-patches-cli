@@ -25,6 +25,13 @@ class PatchEnableCommand extends BaseCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    $extra = $this->getComposer()->getPackage()->getExtra();
+
+    // Check, if patch file is already defined.
+    if (!empty($extra['patches-file'])) {
+      throw new \Exception('Patch file was already defined in your composer.json.');
+    }
+
     $composer_filename = 'composer.json';
     $patches_filename = $input->getOption('file');
 
