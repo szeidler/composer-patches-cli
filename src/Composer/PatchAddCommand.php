@@ -5,11 +5,10 @@ namespace szeidler\ComposerPatchesCLI\Composer;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
-use Composer\Command\BaseCommand;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
 
-class PatchAddCommand extends BaseCommand {
+class PatchAddCommand extends PatchBaseCommand {
 
   protected function configure() {
     $this->setName('patch-add')
@@ -19,6 +18,8 @@ class PatchAddCommand extends BaseCommand {
         new InputArgument('description', InputArgument::REQUIRED),
         new InputArgument('url', InputArgument::REQUIRED),
       ]);
+
+    parent::configure();
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
