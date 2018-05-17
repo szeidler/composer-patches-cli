@@ -43,8 +43,11 @@ class PatchEnableCommand extends PatchBaseCommand {
     // Create patch file if not existing.
     $patches_file = new JsonFile($patches_filename);
     if (!$patches_file->exists()) {
-      copy(dirname(__FILE__ ) . '/../Fixtures/composer.patches.json', $patches_filename);
-      $output->writeln('The composer patches file was created.');
+      if (copy(dirname(__FILE__ ) . '/../Fixtures/composer.patches.json', $patches_filename)) {
+        $output->writeln('The composer patches file was created.');
+      } else {
+        throw new \Exception('Patch could not be created.');
+      }
     }
 
     // Enable patching and define the patch file.
@@ -52,7 +55,9 @@ class PatchEnableCommand extends PatchBaseCommand {
     $manipulator->addProperty('extra.patches-file', $patches_filename);
 
     // Store the manipulated JSON file.
-    file_put_contents($composer_filename, $manipulator->getContents());
+    if (!file_put_contents($composer_filename, $manipulator->getContents())) {
+      throw new \Exception('Composer file could not be saved. Please check the permissions.');
+    }
 
     $output->writeln('The composer patches functionality was enabled successfully.');
   }
