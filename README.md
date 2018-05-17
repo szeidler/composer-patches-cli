@@ -61,13 +61,13 @@ The patch add command accepts the following arguments.
 
 If the package argument is omitted, the command will return all defined patches.
 
-Example:
 
 Example:
 
 ```sh
 $ composer patch-list            
-$ Package: drupal/core
+
+Package: drupal/core
 +-----------------------------------------+-------------------------------------------------------------------------------------------------+
 | Description                             | URL                                                                                             |
 +-----------------------------------------+-------------------------------------------------------------------------------------------------+
