@@ -5,11 +5,10 @@ namespace szeidler\ComposerPatchesCLI\Composer;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Composer\Command\BaseCommand;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
 
-class PatchEnableCommand extends BaseCommand {
+class PatchEnableCommand extends PatchBaseCommand {
 
   protected function configure() {
     $default_file_name = 'composer.patches.json';
@@ -22,6 +21,8 @@ class PatchEnableCommand extends BaseCommand {
         'Which file name should your patch file use.',
         $default_file_name
       );
+
+    parent::configure();
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
