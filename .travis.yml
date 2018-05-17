@@ -14,7 +14,7 @@ cache:
 before_script:
   - composer create-project drupal-composer/drupal-project:8.x-dev some-dir --stability dev --no-interaction
   - cd some-dir
-  - composer require szeidler/composer-patches-cli:dev-master
+  - composer require ${TRAVIS_REPO_SLUG}/composer-patches-cli:dev-${TRAVIS_BRANCH}
 
 script:
   - cd web/modules
