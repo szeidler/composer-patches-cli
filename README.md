@@ -46,7 +46,34 @@ The patch add command accepts the following arguments in the defined order.
 Example:
 
 ```sh
-composer patch-add drupal/core "SA-CORE-2018-002" "https://cgit.drupalcode.org/drupal/rawdiff/?h=8.5.x&id=5ac8738fa69df34a0635f0907d661b509ff9a28f"  
+composer patch-add drupal/core "SA-CORE-2018-002" "https://cgit.drupalcode.org/drupal/rawdiff/?h=8.5.x&id=5ac8738fa69df34a0635f0907d661b509ff9a28f"
+```
+
+### Patch List
+
+```sh
+composer patch-list <package>
+```
+
+The patch add command accepts the following arguments.
+
+1. `<package>` (optional) Name of the package to patch.
+
+If the package argument is omitted, the command will return all defined patches.
+
+
+Example:
+
+```sh
+$ composer patch-list            
+
+Package: drupal/core
++-----------------------------------------+-------------------------------------------------------------------------------------------------+
+| Description                             | URL                                                                                             |
++-----------------------------------------+-------------------------------------------------------------------------------------------------+
+| Simple decimals fail to pass validation | https://www.drupal.org/files/issues/2018-04-23/drupal_2230909_113.patch                         |
+| SA-CORE-2018-002                        | https://cgit.drupalcode.org/drupal/rawdiff/?h=8.5.x&id=5ac8738fa69df34a0635f0907d661b509ff9a28f |
++-----------------------------------------+-------------------------------------------------------------------------------------------------+
 ```
 
 ## Credits
