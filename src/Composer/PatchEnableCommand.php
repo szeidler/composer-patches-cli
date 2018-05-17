@@ -7,8 +7,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
+use Composer\Command\BaseCommand;
 
-class PatchEnableCommand extends PatchBaseCommand {
+class PatchEnableCommand extends BaseCommand {
 
   protected function configure() {
     $default_file_name = 'composer.patches.json';
