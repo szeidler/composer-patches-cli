@@ -47,6 +47,8 @@ Example:
 composer patch-add drupal/core "SA-CORE-2018-002" "https://cgit.drupalcode.org/drupal/rawdiff/?h=8.5.x&id=5ac8738fa69df34a0635f0907d661b509ff9a28f"
 ```
 
+You can omit arguments for an interactive mode.
+
 ### Patch List
 
 ```sh
