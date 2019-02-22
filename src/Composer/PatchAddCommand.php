@@ -25,15 +25,15 @@ class PatchAddCommand extends PatchBaseCommand {
   protected function interact(InputInterface $input, OutputInterface $output) {
     $dialog = $this->getHelperSet()->get('dialog');
     if (!$input->getArgument('package')) {
-      $package = $dialog->ask($output, '<question>Please enter the package, you want to patch.</question>');
+      $package = $dialog->ask($output, '<question>Specify the package name to be patched: </question>');
       $input->setArgument('package', $package);
     }
     if (!$input->getArgument('description')) {
-      $description = $dialog->ask($output, '<question>Please enter a description for the patch.</question>');
+      $description = $dialog->ask($output, '<question>Enter a short description of the change: </question>');
       $input->setArgument('description', $description);
     }
     if (!$input->getArgument('url')) {
-      $url = $dialog->ask($output, '<question>Please enter the URL or path of the patch.</question>');
+      $url = $dialog->ask($output, '<question>Enter the URL or Path of the patch: </question>');
       $input->setArgument('url', $url);
     }
   }
