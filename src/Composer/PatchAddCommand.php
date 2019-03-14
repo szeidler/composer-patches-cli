@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
+use Composer\Installer;
 
 class PatchAddCommand extends PatchBaseCommand {
 
@@ -78,6 +79,10 @@ class PatchAddCommand extends PatchBaseCommand {
     file_put_contents($config->getPatchesFile(), $manipulator->getContents());
 
     $output->writeln('The patch was successfully added.');
+
+    // Trigger install command after adding a patch.
+    $install = Installer::create($this->getIO(), $this->getComposer());
+    $install->run();
   }
 
 }
