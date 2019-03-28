@@ -82,6 +82,11 @@ class PatchAddCommand extends PatchBaseCommand {
 
     // Trigger install command after adding a patch.
     $install = Installer::create($this->getIO(), $this->getComposer());
+    // We run an update, because the patch will otherwise not end up in the
+    // composer.lock. Beware: This could update the package unwanted.
+    $install->setUpdate(TRUE);
+    // Don't update the dependencies of the patched package.
+    $install->setWhitelistTransitiveDependencies(FALSE);
     $install->run();
   }
 
