@@ -10,6 +10,21 @@ use Composer\Json\JsonManipulator;
 
 class PatchAddCommand extends PatchBaseCommand {
 
+  /**
+   * Indicates that a patch with the same Description already exists.
+   */
+  const PATCH_DUPE_DESCR = 1;
+  
+  /**
+   * Indicates that a patch withy the same URL already exists.
+   */
+  const PATCH_DUPE_URL = 2;
+  
+  /**
+   * Indicates that a patch exists with both same URL and same Description.
+   */
+  const PATCH_DUPE_EXISTS = 3;
+
   protected function configure() {
     $this->setName('patch-add')
       ->setDescription('Adds a patch to a composer patch file.')
@@ -58,14 +73,24 @@ class PatchAddCommand extends PatchBaseCommand {
     $contents = $manipulator->getContents();
     $patches = json_decode($contents, TRUE);
 
-    $package_patches = [];
     // Add the patches of the packages from the composer patch file.
-    if (isset($patches['patches'][$package])) {
-      $package_patches = $patches['patches'][$package];
-    }
+    $package_patches = $patches['patches'][$package] ?? [];
 
-    if (isset($package_patches[$description])) {
-      throw new \Exception('The patch description already exists. Make sure to add patches only once and use an unique description.');
+    if ($duplicate = $this->isDuplicatePatch($url, $description, $package_patches)) {
+      switch ($duplicate) {
+        case self::PATCH_DUPE_EXISTS:
+          // Patch is already listes with same Description and same URL
+          $output->writeln('<info>The patch already exists. If it is not applied please run "$ composer update ' . $package . '".</info>');
+          // Nothing else to do here, return to the caller.
+          return TRUE;
+          break;
+        
+        case self::PATCH_DUPE_DESCR:
+        case self::PATCH_DUPE_URL:
+          $type = ($duplicate === self::PATCH_DUPE_URL) ? 'URL' : 'Description';
+          $message = 'A patch with the same "' . $type . '" already exists.';
+          throw new \InvalidArgumentException($message);
+      }
     }
 
     // Add new patch.
@@ -80,4 +105,47 @@ class PatchAddCommand extends PatchBaseCommand {
     $output->writeln('The patch was successfully added.');
   }
 
+  /**
+   *  Checks if a patch is already listed in the existing patches.
+   * 
+   * @param string $patch_url
+   *   URL address of the patch to check.
+   * @param string $patch_description
+   *   Description string of the patch to check.
+   * @param array $patches
+   *   Array of existing patches, indexed by the description.
+   *
+   * @return int|false
+   *   One of the self::PATCH_DUPE_* constants, or False if patch is new.
+   */
+  protected function isDuplicatePatch(string $patch_url, string $patch_description, array $patches) {
+    // Check for a duplicate description.
+    $duplicate_description = isset($patches[$patch_description]);
+
+    // Check for a duplicate URL.
+    $duplicate_url = FALSE;
+    foreach($patches as $url) {
+      if ($url === $patch_url) {
+        $duplicate_url = TRUE;
+        break;
+      }
+    }
+
+    if ($duplicate_description) {
+      if ($duplicate_url) {
+        // A patch with the same description and same url already exists.
+        return self::PATCH_DUPE_EXISTS;
+      }
+      // A patch with the same description already exists.
+      return self::PATCH_DUPE_DESCR;
+    }
+
+    if ($duplicate_url) {
+      // A patch with the same URL already exists.
+      return self::PATCH_DUPE_URL;
+    }
+
+    // The patch is not duplicate.
+    return FALSE;
+  }
 }
