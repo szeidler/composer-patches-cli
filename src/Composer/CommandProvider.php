@@ -10,6 +10,6 @@ class CommandProvider implements CommandProviderCapability {
    * {@inheritDoc}
    */
   public function getCommands() {
-    return [new PatchEnableCommand(), new PatchAddCommand(), new PatchListCommand()];
+    return [new PatchEnableCommand(), new PatchAddCommand(), new PatchRemoveCommand(), new PatchListCommand()];
   }
 }
