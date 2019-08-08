@@ -4,6 +4,7 @@ namespace szeidler\ComposerPatchesCLI\Composer;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
@@ -18,6 +19,8 @@ class PatchAddCommand extends PatchBaseCommand {
         new InputArgument('package', InputArgument::REQUIRED),
         new InputArgument('description', InputArgument::REQUIRED),
         new InputArgument('url', InputArgument::REQUIRED),
+        new InputOption('no-update', null, InputOption::VALUE_NONE, 'Do not run an update: as side effect patch will not be applied.'),
+        new InputOption('update-no-dev', null, InputOption::VALUE_NONE, 'Run the dependency update with the --no-dev option.'),
       ]);
 
     parent::configure();
@@ -45,6 +48,7 @@ class PatchAddCommand extends PatchBaseCommand {
     $package = $input->getArgument('package');
     $description = $input->getArgument('description');
     $url = $input->getArgument('url');
+    $updateDevMode = !$input->getOption('update-no-dev');
 
     // Validate the patch url argument.
     if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
@@ -80,14 +84,26 @@ class PatchAddCommand extends PatchBaseCommand {
 
     $output->writeln('The patch was successfully added.');
 
-    // Trigger install command after adding a patch.
-    $install = Installer::create($this->getIO(), $this->getComposer());
-    // We run an update, because the patch will otherwise not end up in the
-    // composer.lock. Beware: This could update the package unwanted.
-    $install->setUpdate(TRUE);
-    // Don't update the dependencies of the patched package.
-    $install->setWhitelistTransitiveDependencies(FALSE);
-    $install->run();
+    if (!$input->getOption('no-update')) {
+      // Trigger install command after adding a patch.
+      $install = Installer::create($this->getIO(), $this->getComposer());
+
+      // We run an update, because the patch will otherwise not end up in the
+      // composer.lock. Beware: This could update the package unwanted.
+      $install->setUpdate(TRUE)
+        // Forward the option
+        ->setVerbose($input->getOption('verbose'))
+        // Only update the current package
+        ->setUpdateWhitelist([$package])
+        // Don't update the dependencies of the patched package.
+        ->setWhitelistTransitiveDependencies(FALSE)
+        ->setWhitelistAllDependencies(FALSE)
+        // Patches are always considered to be applied in "dev mode".
+        // This is also required to prevent composer from removing all installed
+        // dev dependencies.
+        ->setDevMode($updateDevMode)
+        ->run();
+    }
   }
 
 }
