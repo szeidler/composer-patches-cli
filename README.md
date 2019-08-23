@@ -49,6 +49,25 @@ composer patch-add drupal/core "SA-CORE-2018-002" "https://cgit.drupalcode.org/d
 
 You can omit arguments for an interactive mode.
 
+### Patch Remove
+
+```sh
+composer patch-remove <package> <description>
+```
+
+The patch remove command accepts the following arguments in the defined order.
+
+1. `<package>` Name of the package from which you want to remove the patch.
+2. `<description>` Description of the patch to be removed.
+
+Example:
+
+```sh
+composer patch-remove drupal/core "SA-CORE-2018-002"
+```
+
+You can omit arguments for an interactive mode.
+
 ### Patch List
 
 ```sh
