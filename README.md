@@ -52,7 +52,7 @@ The patch add command accepts the following options.
 * `--no-update` Use this option to prevent composer to update the package and apply the patch. The patch will only end
 up in your `composer.json`, not `composer.lock` file.
 
-* `--update-no-dev` Run the dependency update with the --no-dev option.
+* `--no-dev` Run the dependency update with the --no-dev option.
 
 You can omit arguments for an interactive mode.
 

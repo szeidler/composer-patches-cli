@@ -20,7 +20,7 @@ class PatchAddCommand extends PatchBaseCommand {
         new InputArgument('description', InputArgument::REQUIRED),
         new InputArgument('url', InputArgument::REQUIRED),
         new InputOption('no-update', null, InputOption::VALUE_NONE, 'Do not run an update: as side effect patch will not be applied.'),
-        new InputOption('update-no-dev', null, InputOption::VALUE_NONE, 'Run the dependency update with the --no-dev option.'),
+        new InputOption('no-dev', null, InputOption::VALUE_NONE, 'Run the dependency update with the --no-dev option.'),
       ]);
 
     parent::configure();
@@ -48,7 +48,7 @@ class PatchAddCommand extends PatchBaseCommand {
     $package = $input->getArgument('package');
     $description = $input->getArgument('description');
     $url = $input->getArgument('url');
-    $updateDevMode = !$input->getOption('update-no-dev');
+    $updateDevMode = !$input->getOption('no-dev');
 
     // Validate the patch url argument.
     if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
