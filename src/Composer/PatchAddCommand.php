@@ -60,9 +60,9 @@ class PatchAddCommand extends PatchBaseCommand {
     $description = $input->getArgument('description');
     $url = $input->getArgument('url');
 
-    // Validate the patch url argument.
-    if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
-      throw new \Exception('Your patch url argument must be a valid URL.');
+    // The patch needs to be an existing local path or a valid URL.
+    if (!file_exists($url) && filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
+      throw new \Exception('Your patch url argument must be a valid URL or local path.');
     }
 
     // Read in the current patch file.
