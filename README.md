@@ -47,6 +47,13 @@ Example:
 composer patch-add drupal/core "SA-CORE-2018-002" "https://cgit.drupalcode.org/drupal/rawdiff/?h=8.5.x&id=5ac8738fa69df34a0635f0907d661b509ff9a28f"
 ```
 
+The patch add command accepts the following options.
+
+* `--no-update` Use this option to prevent composer to update the package and apply the patch. The patch will only end
+up in your `composer.json`, not `composer.lock` file.
+
+* `--no-dev` Run the dependency update with the --no-dev option.
+
 You can omit arguments for an interactive mode.
 
 ### Patch Remove
