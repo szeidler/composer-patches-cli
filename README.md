@@ -39,7 +39,7 @@ The patch add command accepts the following arguments in the defined order.
 
 1. `<package>` Name of the package to patch.
 2. `<description>` Description of the patch to be used.
-3. `<url>` URL of the patch file.
+3. `<url>` URL or local path of the patch file.
 
 Example:
 
