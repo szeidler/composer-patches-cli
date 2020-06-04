@@ -2,16 +2,13 @@
 
 namespace szeidler\ComposerPatchesCLI\Composer;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Output\OutputInterface;
+use Composer\Command\BaseCommand;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableSeparator;
-use Symfony\Component\Console\Helper\TableCell;
-use Composer\Json\JsonFile;
-use Composer\Json\JsonManipulator;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-class PatchListCommand extends PatchBaseCommand {
+class PatchListCommand extends BaseCommand {
 
   protected function configure() {
     $this->setName('patch-list')

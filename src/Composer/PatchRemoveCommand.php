@@ -2,13 +2,14 @@
 
 namespace szeidler\ComposerPatchesCLI\Composer;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Output\OutputInterface;
+use Composer\Command\BaseCommand;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-class PatchRemoveCommand extends PatchBaseCommand {
+class PatchRemoveCommand extends BaseCommand {
 
   protected function configure() {
     $this->setName('patch-remove')

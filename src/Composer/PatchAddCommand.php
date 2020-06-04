@@ -2,15 +2,16 @@
 
 namespace szeidler\ComposerPatchesCLI\Composer;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
+use Composer\Command\BaseCommand;
+use Composer\Installer;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
-use Composer\Installer;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
-class PatchAddCommand extends PatchBaseCommand {
+class PatchAddCommand extends BaseCommand {
 
   /**
    * Indicates that a patch with the same Description already exists.
