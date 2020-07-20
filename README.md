@@ -17,11 +17,12 @@ Add Composer Patches CLI as a composer dependency.
 
 ### Patch Enable
 
-The patch enable function enables the patching functionality in your root composer.json and creates a patch file if not existing.
+The patch enable function enables the patching functionality in your root composer.json. It will create empty patches
+definition in your composer.json or add a separate composer patch file, when using the `--file` option.
 
 The patch enable command accepts the following options.
 
-* `--file` Filename of the composer patch file to be created (default: composer.patches.json')
+* `--file` Filename of the composer patch file to be created
 
 Example: 
 

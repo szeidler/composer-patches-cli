@@ -34,39 +34,52 @@ class PatchRemoveCommand extends PatchBaseCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $config = new Config($this->getComposer());
-
+    $extra = $extra = $this->getComposer()->getPackage()->getExtra();
     $package = $input->getArgument('package');
     $description = $input->getArgument('description');
 
+    if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
+      $manipulator_filename = 'composer.json';
+      $json_node = 'extra';
+      $json_name = 'patches';
+    }
+    elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
+      $manipulator_filename = $extra['patches-file'];
+      $json_node = null;
+      $json_name = 'patches';
+    }
+    else {
+      throw new \Exception('Composer patches seems to be not enabled. Please enable composer patches first.');
+    }
+
     // Read in the current patch file.
-    $file = new JsonFile($config->getPatchesFile());
+    $file = new JsonFile($manipulator_filename);
     $manipulator = new JsonManipulator(file_get_contents($file->getPath()));
 
     // Merge patches for the package.
-    $contents = $manipulator->getContents();
-    $patches = json_decode($contents, TRUE);
-
-    // Check if the given package has packages.
-    if (!isset($patches['patches'][$package])) {
-      throw new \InvalidArgumentException('The given package does not have patches in your composer.json.');
-    }
-
-    $package_patches = $patches['patches'][$package];
+    $patches = $this->grabPatches();
 
     // Remove the patch.
-    if (isset($package_patches[$description])) {
-      unset($package_patches[$description]);
+    if (isset($patches[$package][$description])) {
+      unset($patches[$package][$description]);
     }
     else {
       throw new \InvalidArgumentException('The given patch description does not exist for this package.');
     }
 
+    // Check if there is any remaining patch for the package. Otherwise remove
+    // the empty package definition as well.
+    if (empty($patches[$package])) {
+      unset($patches[$package]);
+    }
+
     // Merge in the updated packages into the JSON again.
-    $manipulator->addSubNode('patches', $package, $package_patches);
+    $manipulator->addSubNode($json_node, $json_name, $patches);
 
     // Store the manipulated JSON file.
-    file_put_contents($config->getPatchesFile(), $manipulator->getContents());
+    if (!file_put_contents($manipulator_filename, $manipulator->getContents())) {
+      throw new \Exception($extra['patches-file'] . ' file could not be saved. Please check the permissions.');
+    }
 
     $output->writeln('The patch was successfully removed.');
   }
