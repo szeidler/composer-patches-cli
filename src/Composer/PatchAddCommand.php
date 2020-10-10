@@ -9,6 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
 use Composer\Installer;
+use Composer\Plugin\PluginInterface;
+use Composer\DependencyResolver\Request;
 
 class PatchAddCommand extends PatchBaseCommand {
 
@@ -129,19 +131,37 @@ class PatchAddCommand extends PatchBaseCommand {
 
       // We run an update, because the patch will otherwise not end up in the
       // composer.lock. Beware: This could update the package unwanted.
-      $install->setUpdate(TRUE)
-        // Forward the option
-        ->setVerbose($input->getOption('verbose'))
-        // Only update the current package
-        ->setUpdateWhitelist([$package])
-        // Don't update the dependencies of the patched package.
-        ->setWhitelistTransitiveDependencies(FALSE)
-        ->setWhitelistAllDependencies(FALSE)
-        // Patches are always considered to be applied in "dev mode".
-        // This is also required to prevent composer from removing all installed
-        // dev dependencies.
-        ->setDevMode($updateDevMode)
-        ->run();
+      // Support Composer 1 and Composer 2 methods.
+      switch (PluginInterface::PLUGIN_API_VERSION) {
+        case '1.1.0':
+          $install->setUpdate(TRUE)
+            // Forward the option
+            ->setVerbose($input->getOption('verbose'))
+            // Only update the current package
+            ->setUpdateWhitelist([$package])
+            // Don't update the dependencies of the patched package.
+            ->setWhitelistTransitiveDependencies(FALSE)
+            ->setWhitelistAllDependencies(FALSE)
+            // Patches are always considered to be applied in "dev mode".
+            // This is also required to prevent composer from removing all installed
+            // dev dependencies.
+            ->setDevMode($updateDevMode)
+            ->run();
+          break;
+        default:
+          $install->setUpdate(TRUE)
+            // Forward the option
+            ->setVerbose($input->getOption('verbose'))
+            // Only update the current package
+            ->setUpdateAllowList([$package])
+            // Don't update the dependencies of the patched package.
+            ->setUpdateAllowTransitiveDependencies(Request::UPDATE_LISTED_WITH_TRANSITIVE_DEPS_NO_ROOT_REQUIRE)
+            // Patches are always considered to be applied in "dev mode".
+            // This is also required to prevent composer from removing all installed
+            // dev dependencies.
+            ->setDevMode($updateDevMode)
+            ->run();
+      }
     }
   }
 
