@@ -58,8 +58,7 @@ class PatchAddCommand extends PatchBaseCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $config = new Config($this->getComposer());
-
+    $extra = $extra = $this->getComposer()->getPackage()->getExtra();
     $package = $input->getArgument('package');
     $description = $input->getArgument('description');
     $url = $input->getArgument('url');
@@ -70,16 +69,25 @@ class PatchAddCommand extends PatchBaseCommand {
       throw new \Exception('Your patch url argument must be a valid URL or local path.');
     }
 
-    // Read in the current patch file.
-    $file = new JsonFile($config->getPatchesFile());
-    $manipulator = new JsonManipulator(file_get_contents($file->getPath()));
+    if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
+      $manipulator_filename = 'composer.json';
+      $json_node = 'extra';
+      $json_name = 'patches';
+    }
+    elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
+      $manipulator_filename = $extra['patches-file'];
+      $json_node = null;
+      $json_name = 'patches';
+    }
+    else {
+      throw new \Exception('Composer patches seems to be not enabled. Please enable composer patches first.');
+    }
 
-    // Merge patches for the package.
-    $contents = $manipulator->getContents();
-    $patches = json_decode($contents, TRUE);
+    // Get the defined patches.
+    $patches = $this->grabPatches();
 
     // Add the patches of the packages from the composer patch file.
-    $package_patches = $patches['patches'][$package] ?? [];
+    $package_patches = $patches[$package] ?? [];
 
     if ($duplicate = $this->isDuplicatePatch($url, $description, $package_patches)) {
       switch ($duplicate) {
@@ -100,13 +108,19 @@ class PatchAddCommand extends PatchBaseCommand {
 
     // Add new patch.
     $package_patches[$description] = $url;
+    $patches[$package] = $package_patches;
 
-    // Merge in the updated packages into the JSON again.
-    $manipulator->addSubNode('patches', $package, $package_patches);
+    // Read in the current root composer.json file.
+    $file = new JsonFile($manipulator_filename);
+    $manipulator = new JsonManipulator(file_get_contents($file->getPath()));
+
+    // Merge in the updated packages into the JSON.
+    $manipulator->addSubNode($json_node, $json_name, $patches);
 
     // Store the manipulated JSON file.
-    file_put_contents($config->getPatchesFile(), $manipulator->getContents());
-
+    if (!file_put_contents($manipulator_filename, $manipulator->getContents())) {
+      throw new \Exception($extra['patches-file'] . ' file could not be saved. Please check the permissions.');
+    }
     $output->writeln('The patch was successfully added.');
 
     if (!$input->getOption('no-update')) {
