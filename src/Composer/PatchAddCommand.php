@@ -117,7 +117,13 @@ class PatchAddCommand extends PatchBaseCommand {
     $manipulator = new JsonManipulator(file_get_contents($file->getPath()));
 
     // Merge in the updated packages into the JSON.
-    $manipulator->addSubNode($json_node, $json_name, $patches);
+    if (is_null($json_node)) {
+      $manipulator->removeMainKey('patches');
+      $manipulator->addMainKey('patches', $patches);
+    }
+    else {
+      $manipulator->addSubNode($json_node, $json_name, $patches);
+    }
 
     // Store the manipulated JSON file.
     if (!file_put_contents($manipulator_filename, $manipulator->getContents())) {
