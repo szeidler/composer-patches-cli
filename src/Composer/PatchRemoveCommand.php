@@ -74,7 +74,13 @@ class PatchRemoveCommand extends PatchBaseCommand {
     }
 
     // Merge in the updated packages into the JSON again.
-    $manipulator->addSubNode($json_node, $json_name, $patches);
+    if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
+      $manipulator->addSubNode($json_node, $json_name, $patches);
+    }
+    elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
+      $manipulator->removeMainKey('patches');
+      $manipulator->addMainKey('patches', $patches);
+    }
 
     // Store the manipulated JSON file.
     if (!file_put_contents($manipulator_filename, $manipulator->getContents())) {
