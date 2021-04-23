@@ -22,7 +22,7 @@ class PatchRemoveCommand extends PatchBaseCommand {
   }
 
   protected function interact(InputInterface $input, OutputInterface $output) {
-    $dialog = $this->getHelperSet()->get('dialog');
+    $dialog = $this->getHelperSet()->get('question');
     if (!$input->getArgument('package')) {
       $package = $dialog->ask($output, '<question>Specify the package from where you want to remove a patch: </question>');
       $input->setArgument('package', $package);
