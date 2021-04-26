@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
 use Composer\Installer;
@@ -44,17 +45,20 @@ class PatchAddCommand extends PatchBaseCommand {
   }
 
   protected function interact(InputInterface $input, OutputInterface $output) {
-    $dialog = $this->getHelperSet()->get('dialog');
+    $dialog = $this->getHelperSet()->get('question');
     if (!$input->getArgument('package')) {
-      $package = $dialog->ask($output, '<question>Specify the package name to be patched: </question>');
+      $question = new Question('Specify the package name to be patched: ');
+      $package = $dialog->ask($input, $output, $question);
       $input->setArgument('package', $package);
     }
     if (!$input->getArgument('description')) {
-      $description = $dialog->ask($output, '<question>Enter a short description of the change: </question>');
+      $question = new Question('Enter a short description of the change: ');
+      $description = $dialog->ask($input, $output, $question);
       $input->setArgument('description', $description);
     }
     if (!$input->getArgument('url')) {
-      $url = $dialog->ask($output, '<question>Enter the URL or Path of the patch: </question>');
+      $question = new Question('Enter the URL or Path of the patch: ');
+      $url = $dialog->ask($input, $output, $question);
       $input->setArgument('url', $url);
     }
   }
