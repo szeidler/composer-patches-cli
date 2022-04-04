@@ -1,6 +1,7 @@
 {
   "name": "szeidler/composer-patches-cli",
   "type": "composer-plugin",
+  "license": "MIT",
   "require": {
     "composer-plugin-api": "^1.0 || ^2.0",
     "cweagans/composer-patches": "^1.7",
