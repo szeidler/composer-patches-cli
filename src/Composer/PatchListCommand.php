@@ -67,6 +67,8 @@ class PatchListCommand extends PatchBaseCommand {
         $output->writeln($formattedBlock);
       }
     }
+
+    return 0;
   }
 
 }

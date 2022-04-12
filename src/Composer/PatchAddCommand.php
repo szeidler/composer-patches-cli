@@ -173,6 +173,8 @@ class PatchAddCommand extends PatchBaseCommand {
             ->run();
       }
     }
+
+    return 0;
   }
 
   /**

@@ -91,5 +91,7 @@ class PatchRemoveCommand extends PatchBaseCommand {
     }
 
     $output->writeln('The patch was successfully removed.');
+
+    return 0;
   }
 }

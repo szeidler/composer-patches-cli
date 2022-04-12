@@ -67,5 +67,7 @@ class PatchEnableCommand extends PatchBaseCommand {
     }
 
     $output->writeln('The composer patches functionality was enabled successfully.');
+
+    return 0;
   }
 }
