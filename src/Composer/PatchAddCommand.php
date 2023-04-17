@@ -165,7 +165,7 @@ class PatchAddCommand extends PatchBaseCommand {
             // Only update the current package
             ->setUpdateAllowList([$package])
             // Don't update the dependencies of the patched package.
-            ->setUpdateAllowTransitiveDependencies(Request::UPDATE_LISTED_WITH_TRANSITIVE_DEPS_NO_ROOT_REQUIRE)
+            ->setUpdateAllowTransitiveDependencies(Request::UPDATE_ONLY_LISTED)
             // Patches are always considered to be applied in "dev mode".
             // This is also required to prevent composer from removing all installed
             // dev dependencies.
