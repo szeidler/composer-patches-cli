@@ -101,7 +101,7 @@ class PatchAddCommand extends PatchBaseCommand {
           // Patch is already listes with same Description and same URL
           $output->writeln('<info>The patch already exists. If it is not applied please run "$ composer update ' . $package . '".</info>');
           // Nothing else to do here, return to the caller.
-          return TRUE;
+          return 0;
           break;
         
         case self::PATCH_DUPE_DESCR:
