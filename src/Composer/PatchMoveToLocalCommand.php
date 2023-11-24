@@ -12,8 +12,8 @@ use Composer\Util\HttpDownloader;
 class PatchMoveToLocalCommand extends PatchBaseCommand {
 
   protected function configure() {
-    $this->setName('patch-move-to-local')
-      ->setDescription('Moves all remote patches to local.')
+    $this->setName('patch-remote-to-local')
+      ->setDescription('Convert all remote patches to local stored ones.')
       ->setDefinition([
         new InputArgument('directory', InputArgument::REQUIRED, 'The directory where the patches should be moved to.')
       ]);

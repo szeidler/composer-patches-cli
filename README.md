@@ -106,7 +106,7 @@ Package: drupal/core
 ### Move remote patches to local files.
 
 ```sh
-composer patch-move-to-local <directory>
+composer patch-remote-to-local <directory>
 ```
 
 Using remote patches has security implications. Therefore it is wise to store them locally. This command will
@@ -120,7 +120,7 @@ The move remote patches to local files command accepts the following arguments.
 Example:
 
 ```sh
-composer patch-move-to-local patches
+composer patch-remote-to-local patches
 ```
 
 ## Credits
