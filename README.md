@@ -103,6 +103,26 @@ Package: drupal/core
 +-----------------------------------------+-------------------------------------------------------------------------------------------------+
 ```
 
+### Move remote patches to local files.
+
+```sh
+composer patch-remote-to-local <directory>
+```
+
+Using remote patches has security implications. Therefore it is wise to store them locally. This command will
+download all remote patches and store them in the given directory. The command will also update your composer.json or
+composer.patches.json.
+
+The move remote patches to local files command accepts the following arguments.
+
+1. `<directory>` The name of the directory the files should be placed in.
+
+Example:
+
+```sh
+composer patch-remote-to-local patches
+```
+
 ## Credits
 
 Stephan Zeidler for [Ramsalt Lab AS](https://ramsalt.com)
