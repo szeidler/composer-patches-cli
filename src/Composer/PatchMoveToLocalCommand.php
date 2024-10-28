@@ -21,7 +21,7 @@ class PatchMoveToLocalCommand extends PatchBaseCommand {
     parent::configure();
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $extra = $this->getComposer()->getPackage()->getExtra();
 
     if ($this->getPatchType() === self::PATCHTYPE_ROOT) {

@@ -63,7 +63,7 @@ class PatchAddCommand extends PatchBaseCommand {
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $extra = $extra = $this->getComposer()->getPackage()->getExtra();
     $package = $input->getArgument('package');
     $description = $input->getArgument('description');
