@@ -23,7 +23,7 @@ class PatchEnableCommand extends PatchBaseCommand {
     parent::configure();
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $extra = $this->getComposer()->getPackage()->getExtra();
 
     // Check, if patch file is already defined.
