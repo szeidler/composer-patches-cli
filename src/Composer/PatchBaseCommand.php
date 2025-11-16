@@ -23,7 +23,7 @@ class PatchBaseCommand extends BaseCommand {
    *   The patch type.
    */
   protected function getPatchType() {
-    $extra = $this->getComposer()->getPackage()->getExtra();
+    $extra = $this->requireComposer()->getPackage()->getExtra();
 
     if (isset($extra['patches'])) {
       return self::PATCHTYPE_ROOT;
@@ -46,7 +46,7 @@ class PatchBaseCommand extends BaseCommand {
    */
   protected function grabPatches() {
     // First, try to get the patches from the root composer.json.
-    $extra = $this->getComposer()->getPackage()->getExtra();
+    $extra = $this->requireComposer()->getPackage()->getExtra();
     if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
       $this->getIO()->write('<info>Gathering patches from root composer.json.</info>');
       $patches = $extra['patches'];

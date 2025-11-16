@@ -37,7 +37,7 @@ class PatchRemoveCommand extends PatchBaseCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output): int {
-    $extra = $extra = $this->getComposer()->getPackage()->getExtra();
+    $extra = $extra = $this->requireComposer()->getPackage()->getExtra();
     $package = $input->getArgument('package');
     $description = $input->getArgument('description');
 

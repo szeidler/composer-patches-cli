@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<ruleset name="ComposerPatchesCli">
+    <!-- Set the coding standard -->
+    <rule ref="PSR2" />
+
+    <!-- Directories to scan -->
+    <file>src</file>
+    <file>tests</file>
+</ruleset>

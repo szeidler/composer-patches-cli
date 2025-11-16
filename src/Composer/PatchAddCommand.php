@@ -64,7 +64,7 @@ class PatchAddCommand extends PatchBaseCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output): int {
-    $extra = $extra = $this->getComposer()->getPackage()->getExtra();
+    $extra = $extra = $this->requireComposer()->getPackage()->getExtra();
     $package = $input->getArgument('package');
     $description = $input->getArgument('description');
     $url = $input->getArgument('url');
@@ -137,7 +137,7 @@ class PatchAddCommand extends PatchBaseCommand {
 
     if (!$input->getOption('no-update')) {
       // Trigger install command after adding a patch.
-      $install = Installer::create($this->getIO(), $this->getComposer());
+      $install = Installer::create($this->getIO(), $this->requireComposer());
 
       // We run an update, because the patch will otherwise not end up in the
       // composer.lock. Beware: This could update the package unwanted.
