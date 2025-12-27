@@ -30,7 +30,7 @@ class PatchAddCommand extends PatchBaseCommand {
    */
   const PATCH_DUPE_EXISTS = 3;
 
-  protected function configure() {
+  protected function configure(): void {
     $this->setName('patch-add')
       ->setDescription('Adds a patch to a composer patch file.')
       ->setDefinition([

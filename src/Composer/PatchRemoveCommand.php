@@ -11,7 +11,7 @@ use Composer\Json\JsonManipulator;
 
 class PatchRemoveCommand extends PatchBaseCommand {
 
-  protected function configure() {
+  protected function configure(): void {
     $this->setName('patch-remove')
       ->setDescription('Remove a from a composer patch file.')
       ->setDefinition([

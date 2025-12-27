@@ -13,7 +13,7 @@ use Composer\Json\JsonManipulator;
 
 class PatchListCommand extends PatchBaseCommand {
 
-  protected function configure() {
+  protected function configure(): void {
     $this->setName('patch-list')
       ->setDescription('Lists the patches from the composer patch file.')
       ->setDefinition([

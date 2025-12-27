@@ -10,7 +10,7 @@ use Composer\Json\JsonManipulator;
 
 class PatchEnableCommand extends PatchBaseCommand {
 
-  protected function configure() {
+  protected function configure(): void {
     $this->setName('patch-enable')
       ->setDescription('Enables the patch functionality in your composer.json.')
       ->addOption(
