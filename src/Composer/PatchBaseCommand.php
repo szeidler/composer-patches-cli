@@ -10,7 +10,7 @@ class PatchBaseCommand extends BaseCommand {
   const PATCHTYPE_ROOT = 1;
   const PATCHTYPE_FILE = 2;
 
-  protected function configure() {
+  protected function configure(): void {
     parent::configure();
   }
 
