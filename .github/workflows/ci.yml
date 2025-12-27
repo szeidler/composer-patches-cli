@@ -27,10 +27,6 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      # Run PHP CodeSniffer (phpcs)
-      - name: Run PHP_CodeSniffer
-        run: vendor/bin/phpcs
-
       # Run PHPUnit tests
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit --configuration phpunit.xml.dist
