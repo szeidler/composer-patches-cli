@@ -9,7 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: ['8.2', '8.3', '8.4'] # Define the different PHP versions to test with
+        php: ['8.2', '8.3', '8.4']
+        symfony: ['^7.0', '^8.0']
+        exclude:
+          - php: '8.2'
+            symfony: '^8.0'
+          - php: '8.3'
+            symfony: '^8.0'
 
     steps:
       # Checkout the code
@@ -25,7 +31,9 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: |
+          composer require "symfony/console:${{ matrix.symfony }}" --dev --no-update --no-interaction
+          composer update --prefer-dist --no-progress
 
       # Run PHPUnit tests
       - name: Run PHPUnit tests
