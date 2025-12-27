@@ -44,7 +44,7 @@ class PatchAddCommand extends PatchBaseCommand {
     parent::configure();
   }
 
-  protected function interact(InputInterface $input, OutputInterface $output) {
+  protected function interact(InputInterface $input, OutputInterface $output): void {
     $dialog = $this->getHelperSet()->get('question');
     if (!$input->getArgument('package')) {
       $question = new Question('Specify the package name to be patched: ');
