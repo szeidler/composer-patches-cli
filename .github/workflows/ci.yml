@@ -1,0 +1,40 @@
+name: Run Tests
+
+on:
+  push: # Run tests on every push
+  pull_request: # Run tests when a pull request is created or updated
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+        symfony: ['^7.0', '^8.0']
+        exclude:
+          - php: '8.2'
+            symfony: '^8.0'
+          - php: '8.3'
+            symfony: '^8.0'
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up PHP with the matrix version
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }} # Use the PHP version defined in the matrix
+          coverage: none
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          composer require "symfony/console:${{ matrix.symfony }}" --dev --no-update --no-interaction
+          composer update --prefer-dist --no-progress
+
+      # Run PHPUnit tests
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit --configuration phpunit.xml.dist

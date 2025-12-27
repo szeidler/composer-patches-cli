@@ -3,16 +3,31 @@
   "type": "composer-plugin",
   "license": "MIT",
   "require": {
-    "composer-plugin-api": "^1.0 || ^2.0",
+    "composer-plugin-api": "^2.0",
     "cweagans/composer-patches": "^1.7",
-    "php": "^7.0||^8.0"
+    "php": "^8.0"
+  },
+  "require-dev": {
+    "composer/composer": "^2.0",
+    "phpunit/phpunit": "^10.0 || ^11.5",
+    "squizlabs/php_codesniffer": "^3.11"
   },
   "autoload": {
     "psr-4": {
       "szeidler\\ComposerPatchesCLI\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "szeidler\\ComposerPatchesCLI\\Tests\\": "tests"
+    }
+  },
   "extra": {
     "class": "szeidler\\ComposerPatchesCLI\\Composer\\Plugin"
+  },
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
   }
 }

@@ -10,7 +10,7 @@ use Composer\Json\JsonManipulator;
 
 class PatchEnableCommand extends PatchBaseCommand {
 
-  protected function configure() {
+  protected function configure(): void {
     $this->setName('patch-enable')
       ->setDescription('Enables the patch functionality in your composer.json.')
       ->addOption(
@@ -24,7 +24,7 @@ class PatchEnableCommand extends PatchBaseCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output): int {
-    $extra = $this->getComposer()->getPackage()->getExtra();
+    $extra = $this->requireComposer()->getPackage()->getExtra();
 
     // Check, if patch file is already defined.
     if (!empty($extra['patches-file'])) {

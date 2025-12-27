@@ -11,7 +11,7 @@ use Composer\Json\JsonManipulator;
 
 class PatchRemoveCommand extends PatchBaseCommand {
 
-  protected function configure() {
+  protected function configure(): void {
     $this->setName('patch-remove')
       ->setDescription('Remove a from a composer patch file.')
       ->setDefinition([
@@ -22,7 +22,7 @@ class PatchRemoveCommand extends PatchBaseCommand {
     parent::configure();
   }
 
-  protected function interact(InputInterface $input, OutputInterface $output) {
+  protected function interact(InputInterface $input, OutputInterface $output): void {
     $dialog = $this->getHelperSet()->get('question');
     if (!$input->getArgument('package')) {
       $question = new Question('Specify the package name to be patched: ');
@@ -37,7 +37,7 @@ class PatchRemoveCommand extends PatchBaseCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output): int {
-    $extra = $extra = $this->getComposer()->getPackage()->getExtra();
+    $extra = $extra = $this->requireComposer()->getPackage()->getExtra();
     $package = $input->getArgument('package');
     $description = $input->getArgument('description');
 
