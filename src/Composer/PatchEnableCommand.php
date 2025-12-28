@@ -54,7 +54,13 @@ class PatchEnableCommand extends PatchBaseCommand {
     else {
       // Create an empty patches definition in the root composer.json.
       if (!isset($extra['patches']) && !isset($extra['composer-patches']['patches'])) {
-        $manipulator->addProperty('extra.composer-patches.patches', []);
+        $version = $this->getComposerPatchesVersion();
+        if ($version && version_compare($version, '2.0.0', '<')) {
+          $manipulator->addProperty('extra.patches', []);
+        }
+        else {
+          $manipulator->addProperty('extra.composer-patches.patches', []);
+        }
       }
     }
 

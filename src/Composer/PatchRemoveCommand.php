@@ -51,6 +51,11 @@ class PatchRemoveCommand extends PatchBaseCommand {
       $json_node = 'extra';
       $json_name = 'composer-patches.patches';
     }
+    elseif ($this->getPatchType() === self::PATCHTYPE_ROOT_CP1) {
+      $manipulator_filename = 'composer.json';
+      $json_node = 'extra';
+      $json_name = 'patches';
+    }
     elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
       $manipulator_filename = $extra['composer-patches']['patches-file'];
       $json_node = null;
@@ -82,7 +87,7 @@ class PatchRemoveCommand extends PatchBaseCommand {
     }
 
     // Merge in the updated packages into the JSON again.
-    if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
+    if ($this->getPatchType() === self::PATCHTYPE_ROOT || $this->getPatchType() === self::PATCHTYPE_ROOT_CP1) {
       $manipulator->addSubNode($json_node, $json_name, $patches);
     }
     elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {

@@ -3,6 +3,7 @@
 namespace szeidler\ComposerPatchesCLI\Tests;
 
 use szeidler\ComposerPatchesCLI\Composer\PatchEnableCommand;
+use Composer\Package\Package;
 
 /**
  * Tests the PatchEnableCommand.
@@ -10,10 +11,19 @@ use szeidler\ComposerPatchesCLI\Composer\PatchEnableCommand;
 class PatchEnableCommandTest extends PatchCommandTestBase {
 
   /**
-   * Tests that patching is enabled in composer.json.
+   * Tests that patching is enabled in composer.json (Composer Patches 2 style).
    */
-  public function testEnableBasic() {
+  public function testEnableComposerPatches2() {
+    // Ensure we start without patches
+    $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
+    unset($json['extra']['composer-patches']['patches']);
+    file_put_contents($this->composerJsonPath, json_encode($json));
+
     $tester = $this->getCommandTester(PatchEnableCommand::class);
+
+    // Mock Composer Patches 2 version
+    $package = new Package('cweagans/composer-patches', '2.0.0.0', '2.0.0');
+    $this->composer->getRepositoryManager()->getLocalRepository()->addPackage($package);
 
     $tester->execute([]);
 
@@ -23,6 +33,29 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
     $this->assertArrayHasKey('patches', $json['extra']['composer-patches']);
     $this->assertEquals([], $json['extra']['composer-patches']['patches']);
+  }
+
+  /**
+   * Tests that patching is enabled in composer.json (Composer Patches 1 style).
+   */
+  public function testEnableComposerPatches1() {
+    // Mock Composer Patches 1 in requires
+    $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
+    $json['require']['cweagans/composer-patches'] = '1.7.3';
+    // Remove existing patch definition from fixture to allow enabling it again
+    unset($json['extra']['composer-patches']['patches']);
+    file_put_contents($this->composerJsonPath, json_encode($json));
+
+    $tester = $this->getCommandTester(PatchEnableCommand::class);
+
+    $tester->execute([]);
+
+    $output = $tester->getDisplay();
+    $this->assertStringContainsString('The composer patches functionality was enabled successfully.', $output);
+
+    $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
+    $this->assertArrayHasKey('patches', $json['extra']);
+    $this->assertEquals([], $json['extra']['patches']);
   }
 
   /**

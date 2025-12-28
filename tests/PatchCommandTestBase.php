@@ -28,6 +28,13 @@ abstract class PatchCommandTestBase extends TestCase {
   protected $tempDir;
 
   /**
+   * The Composer instance.
+   *
+   * @var \Composer\Composer
+   */
+  protected $composer;
+
+  /**
    * {@inheritDoc}
    */
   protected function setUp(): void {
@@ -68,14 +75,14 @@ abstract class PatchCommandTestBase extends TestCase {
    * @return \Symfony\Component\Console\Tester\CommandTester
    */
   protected function getCommandTester(string $commandClass): CommandTester {
-    $io = new NullIO();
-    $composer = Factory::create($io, $this->composerJsonPath, TRUE, TRUE);
+    $io = new \Composer\IO\BufferIO();
+    $this->composer = Factory::create($io, $this->composerJsonPath, TRUE, TRUE);
     $application = new Application();
     $application->setAutoExit(FALSE);
 
     /** @var \szeidler\ComposerPatchesCLI\Composer\PatchBaseCommand $command */
     $command = new $commandClass();
-    $command->setComposer($composer);
+    $command->setComposer($this->composer);
     $command->setIO($io);
     $command->setApplication($application);
 

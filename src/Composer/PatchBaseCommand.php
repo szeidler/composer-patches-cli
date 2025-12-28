@@ -4,11 +4,13 @@ namespace szeidler\ComposerPatchesCLI\Composer;
 
 use Composer\Factory;
 use Composer\Command\BaseCommand;
+use Composer\Semver\Comparator;
 
 class PatchBaseCommand extends BaseCommand {
 
   const PATCHTYPE_ROOT = 1;
   const PATCHTYPE_FILE = 2;
+  const PATCHTYPE_ROOT_CP1 = 3;
 
   protected function configure(): void {
     parent::configure();
@@ -28,8 +30,44 @@ class PatchBaseCommand extends BaseCommand {
     if (isset($extra['composer-patches']['patches'])) {
       return self::PATCHTYPE_ROOT;
     }
+    elseif (isset($extra['patches'])) {
+      return self::PATCHTYPE_ROOT_CP1;
+    }
     elseif (isset($extra['composer-patches']['patches-file'])) {
       return self::PATCHTYPE_FILE;
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Returns the version of cweagans/composer-patches if installed.
+   *
+   * @return string|null
+   */
+  protected function getComposerPatchesVersion() {
+    $composer = $this->requireComposer();
+    $repositoryManager = $composer->getRepositoryManager();
+    $localRepository = $repositoryManager->getLocalRepository();
+    $packages = $localRepository->getPackages();
+
+    foreach ($packages as $package) {
+      if ($package->getName() === 'cweagans/composer-patches') {
+        return $package->getVersion();
+      }
+    }
+
+    // Fallback: check require in composer.json if not in local repo (e.g. during tests or before install)
+    $configPath = Factory::getComposerFile();
+    if (file_exists($configPath)) {
+      $config = json_decode(file_get_contents($configPath), true);
+      $allRequires = array_merge($config['require'] ?? [], $config['require-dev'] ?? []);
+      if (isset($allRequires['cweagans/composer-patches'])) {
+        $versionConstraint = $allRequires['cweagans/composer-patches'];
+        if (Comparator::lessThan($versionConstraint, '2.0.0') || strpos($versionConstraint, 'dev-') === 0) {
+          return '1.99.99'; // Simulated version for Composer Patches 1
+        }
+      }
     }
 
     return NULL;
@@ -50,6 +88,11 @@ class PatchBaseCommand extends BaseCommand {
     if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
       $this->getIO()->write('<info>Gathering patches from root composer.json.</info>');
       $patches = $extra['composer-patches']['patches'];
+      return $patches;
+    }
+    elseif ($this->getPatchType() === self::PATCHTYPE_ROOT_CP1) {
+      $this->getIO()->write('<info>Gathering patches from root composer.json (extra.patches).</info>');
+      $patches = $extra['patches'];
       return $patches;
     }
     // If it's not specified there, look for a patches-file definition.

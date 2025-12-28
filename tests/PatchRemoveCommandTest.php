@@ -38,6 +38,33 @@ class PatchRemoveCommandTest extends PatchCommandTestBase {
   }
 
   /**
+   * Tests that a patch is removed from composer.json using extra.patches (Composer Patches 1 style).
+   */
+  public function testPatchIsRemovedFromExtraPatches() {
+    file_put_contents($this->composerJsonPath, json_encode([
+      'name' => 'test/project',
+      'extra' => [
+        'patches' => [
+          'vendor/package' => [
+            'Fix bug with Composer Patches 1' => 'path/to/fix.patch',
+          ],
+        ],
+      ],
+    ]));
+
+    $tester = $this->getCommandTester(PatchRemoveCommand::class);
+    $tester->execute([
+      'package' => 'vendor/package',
+      'description' => 'Fix bug with Composer Patches 1',
+      '--no-update' => TRUE,
+    ]);
+
+    $this->assertStringContainsString('The patch was successfully removed.', $tester->getDisplay());
+    $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
+    $this->assertArrayNotHasKey('vendor/package', $json['extra']['patches']);
+  }
+
+  /**
    * Tests that a patch is removed from an external patches file.
    */
   public function testPatchIsRemovedFromExternalFile() {

@@ -40,6 +40,46 @@ class PatchAddCommandTest extends PatchCommandTestBase {
   }
 
   /**
+   * Tests that a patch is added to composer.json using extra.patches (Composer Patches 1 style).
+   */
+  public function testPatchIsAddedToExtraPatches() {
+    file_put_contents($this->composerJsonPath, json_encode([
+      'name' => 'test/project',
+      'extra' => [
+        'patches' => [
+          'vendor/package' => [
+            'Existing Composer Patches 1 patch' => 'https://example.com/existing.patch',
+          ],
+        ],
+      ],
+    ]));
+
+    $tester = $this->getCommandTester(PatchAddCommand::class);
+
+    // Create a patch file.
+    $patchFile = $this->tempDir . '/fix.patch';
+    file_put_contents($patchFile, 'dummy patch content');
+
+    // Execute patch-add command.
+    $tester->execute([
+      'package' => 'vendor/package',
+      'url' => $patchFile,
+      'description' => 'Fix something',
+      '--no-update' => TRUE,
+    ]);
+
+    // Run assertions.
+    $output = $tester->getDisplay();
+
+    $this->assertStringContainsString('The patch was successfully added.', $output);
+    $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
+    $this->assertArrayHasKey('vendor/package', $json['extra']['patches']);
+    $this->assertArrayHasKey('Existing Composer Patches 1 patch', $json['extra']['patches']['vendor/package']);
+    $this->assertArrayHasKey('Fix something', $json['extra']['patches']['vendor/package']);
+    $this->assertSame($patchFile, $json['extra']['patches']['vendor/package']['Fix something']);
+  }
+
+  /**
    * Tests that a patch is added to an external patches file.
    */
   public function testPatchIsAddedToExternalFile() {

@@ -78,6 +78,11 @@ class PatchAddCommand extends PatchBaseCommand {
       $json_node = 'extra';
       $json_name = 'composer-patches.patches';
     }
+    elseif ($this->getPatchType() === self::PATCHTYPE_ROOT_CP1) {
+      $manipulator_filename = 'composer.json';
+      $json_node = 'extra';
+      $json_name = 'patches';
+    }
     elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
       $manipulator_filename = $extra['composer-patches']['patches-file'];
       $json_node = null;
