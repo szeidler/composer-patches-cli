@@ -21,9 +21,8 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
     $this->assertStringContainsString('The composer patches functionality was enabled successfully.', $output);
 
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $this->assertTrue($json['extra']['enable-patching']);
-    $this->assertArrayHasKey('patches', $json['extra']);
-    $this->assertEquals([], $json['extra']['patches']);
+    $this->assertArrayHasKey('patches', $json['extra']['composer-patches']);
+    $this->assertEquals([], $json['extra']['composer-patches']['patches']);
   }
 
   /**
@@ -42,8 +41,7 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
     $this->assertStringContainsString('The composer patches functionality was enabled successfully.', $output);
 
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $this->assertTrue($json['extra']['enable-patching']);
-    $this->assertEquals($patchesFilename, $json['extra']['patches-file']);
+    $this->assertEquals($patchesFilename, $json['extra']['composer-patches']['patches-file']);
     $this->assertFileExists($this->tempDir . '/' . $patchesFilename);
 
     $patchesJson = json_decode(file_get_contents($this->tempDir . '/' . $patchesFilename), TRUE);
@@ -55,7 +53,7 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
    */
   public function testEnableAlreadyDefined() {
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $json['extra']['patches-file'] = 'existing.json';
+    $json['extra']['composer-patches']['patches-file'] = 'existing.json';
     file_put_contents($this->composerJsonPath, json_encode($json));
 
     $tester = $this->getCommandTester(PatchEnableCommand::class);

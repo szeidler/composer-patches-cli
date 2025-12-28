@@ -14,7 +14,7 @@ class PatchListCommandTest extends PatchCommandTestBase {
    */
   public function testListAll() {
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $json['extra']['patches'] = [
+    $json['extra']['composer-patches']['patches'] = [
       'vendor/package1' => [
         'Fix 1' => 'https://example.com/fix1.patch',
       ],
@@ -41,7 +41,7 @@ class PatchListCommandTest extends PatchCommandTestBase {
    */
   public function testListPackage() {
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $json['extra']['patches'] = [
+    $json['extra']['composer-patches']['patches'] = [
       'vendor/package1' => [
         'Fix 1' => 'https://example.com/fix1.patch',
       ],

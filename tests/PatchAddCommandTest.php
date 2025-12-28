@@ -32,11 +32,11 @@ class PatchAddCommandTest extends PatchCommandTestBase {
     $this->assertStringContainsString('The patch was successfully added.',
       $output);
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $this->assertArrayHasKey('vendor/package', $json['extra']['patches']);
+    $this->assertArrayHasKey('vendor/package', $json['extra']['composer-patches']['patches']);
     $this->assertArrayHasKey('Fix something',
-      $json['extra']['patches']['vendor/package']);
+      $json['extra']['composer-patches']['patches']['vendor/package']);
     $this->assertSame($patchFile,
-      $json['extra']['patches']['vendor/package']['Fix something']);
+      $json['extra']['composer-patches']['patches']['vendor/package']['Fix something']);
   }
 
   /**
@@ -47,7 +47,9 @@ class PatchAddCommandTest extends PatchCommandTestBase {
     file_put_contents($this->composerJsonPath, json_encode([
       'name' => 'test/project',
       'extra' => [
-        'patches-file' => 'patches.json',
+        'composer-patches' => [
+          'patches-file' => 'patches.json',
+        ],
       ],
     ]));
     file_put_contents($patchesFile, json_encode(['patches' => []]));
@@ -80,9 +82,11 @@ class PatchAddCommandTest extends PatchCommandTestBase {
     file_put_contents($this->composerJsonPath, json_encode([
       'name' => 'test/project',
       'extra' => [
-        'patches' => [
-          'vendor/package' => [
-            'Existing description' => $patchFile,
+        'composer-patches' => [
+          'patches' => [
+            'vendor/package' => [
+              'Existing description' => $patchFile,
+            ],
           ],
         ],
       ],

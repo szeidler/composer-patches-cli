@@ -16,9 +16,11 @@ class PatchRemoveCommandTest extends PatchCommandTestBase {
     file_put_contents($this->composerJsonPath, json_encode([
       'name' => 'test/project',
       'extra' => [
-        'patches' => [
-          'vendor/package' => [
-            'Fix bug' => 'path/to/fix.patch',
+        'composer-patches' => [
+          'patches' => [
+            'vendor/package' => [
+              'Fix bug' => 'path/to/fix.patch',
+            ],
           ],
         ],
       ],
@@ -32,7 +34,7 @@ class PatchRemoveCommandTest extends PatchCommandTestBase {
 
     $this->assertStringContainsString('The patch was successfully removed.', $tester->getDisplay());
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $this->assertArrayNotHasKey('vendor/package', $json['extra']['patches']);
+    $this->assertArrayNotHasKey('vendor/package', $json['extra']['composer-patches']['patches']);
   }
 
   /**
@@ -42,7 +44,7 @@ class PatchRemoveCommandTest extends PatchCommandTestBase {
     $patchesFile = $this->tempDir . '/patches.json';
     file_put_contents($this->composerJsonPath, json_encode([
       'name' => 'test/project',
-      'extra' => ['patches-file' => 'patches.json'],
+      'extra' => ['composer-patches' => ['patches-file' => 'patches.json']],
     ]));
     file_put_contents($patchesFile, json_encode([
       'patches' => [
@@ -71,7 +73,7 @@ class PatchRemoveCommandTest extends PatchCommandTestBase {
   public function testRemoveNonExistentPatchThrowsException() {
     file_put_contents($this->composerJsonPath, json_encode([
       'name' => 'test/project',
-      'extra' => ['patches' => ['vendor/package' => ['Real patch' => 'path/to/patch']]],
+      'extra' => ['composer-patches' => ['patches' => ['vendor/package' => ['Real patch' => 'path/to/patch']]]],
     ]));
 
     $tester = $this->getCommandTester(PatchRemoveCommand::class);

@@ -2,6 +2,7 @@
 
 namespace szeidler\ComposerPatchesCLI\Composer;
 
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -9,9 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonManipulator;
-use Composer\Installer;
-use Composer\Plugin\PluginInterface;
-use Composer\DependencyResolver\Request;
 
 class PatchAddCommand extends PatchBaseCommand {
 
@@ -78,10 +76,10 @@ class PatchAddCommand extends PatchBaseCommand {
     if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
       $manipulator_filename = 'composer.json';
       $json_node = 'extra';
-      $json_name = 'patches';
+      $json_name = 'composer-patches.patches';
     }
     elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
-      $manipulator_filename = $extra['patches-file'];
+      $manipulator_filename = $extra['composer-patches']['patches-file'];
       $json_node = null;
       $json_name = 'patches';
     }
@@ -136,42 +134,12 @@ class PatchAddCommand extends PatchBaseCommand {
     $output->writeln('The patch was successfully added.');
 
     if (!$input->getOption('no-update')) {
-      // Trigger install command after adding a patch.
-      $install = Installer::create($this->getIO(), $this->requireComposer());
-
-      // We run an update, because the patch will otherwise not end up in the
-      // composer.lock. Beware: This could update the package unwanted.
-      // Support Composer 1 and Composer 2 methods.
-      switch (PluginInterface::PLUGIN_API_VERSION) {
-        case '1.1.0':
-          $install->setUpdate(TRUE)
-            // Forward the option
-            ->setVerbose($input->getOption('verbose'))
-            // Only update the current package
-            ->setUpdateWhitelist([$package])
-            // Don't update the dependencies of the patched package.
-            ->setWhitelistTransitiveDependencies(FALSE)
-            ->setWhitelistAllDependencies(FALSE)
-            // Patches are always considered to be applied in "dev mode".
-            // This is also required to prevent composer from removing all installed
-            // dev dependencies.
-            ->setDevMode($updateDevMode)
-            ->run();
-          break;
-        default:
-          $install->setUpdate(TRUE)
-            // Forward the option
-            ->setVerbose($input->getOption('verbose'))
-            // Only update the current package
-            ->setUpdateAllowList([$package])
-            // Don't update the dependencies of the patched package.
-            ->setUpdateAllowTransitiveDependencies(Request::UPDATE_LISTED_WITH_TRANSITIVE_DEPS_NO_ROOT_REQUIRE)
-            // Patches are always considered to be applied in "dev mode".
-            // This is also required to prevent composer from removing all installed
-            // dev dependencies.
-            ->setDevMode($updateDevMode)
-            ->run();
-      }
+      $application = $this->getApplication();
+      $application->setAutoExit(FALSE);
+      $output->writeln('<info>Relocking patches...</info>');
+      $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
+      $output->writeln('<info>Repatching dependencies...</info>');
+      $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
     }
 
     return 0;

@@ -25,10 +25,10 @@ class PatchBaseCommand extends BaseCommand {
   protected function getPatchType() {
     $extra = $this->requireComposer()->getPackage()->getExtra();
 
-    if (isset($extra['patches'])) {
+    if (isset($extra['composer-patches']['patches'])) {
       return self::PATCHTYPE_ROOT;
     }
-    elseif (isset($extra['patches-file'])) {
+    elseif (isset($extra['composer-patches']['patches-file'])) {
       return self::PATCHTYPE_FILE;
     }
 
@@ -40,7 +40,7 @@ class PatchBaseCommand extends BaseCommand {
    *
    * Currently directly extracted from the Composer Patches code base.
    *
-   * @return Patches
+   * @return array
    * @throws \Exception
    * @see https://github.com/cweagans/composer-patches/blob/1.x/src/Patches.php
    */
@@ -49,13 +49,14 @@ class PatchBaseCommand extends BaseCommand {
     $extra = $this->requireComposer()->getPackage()->getExtra();
     if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
       $this->getIO()->write('<info>Gathering patches from root composer.json.</info>');
-      $patches = $extra['patches'];
+      $patches = $extra['composer-patches']['patches'];
       return $patches;
     }
     // If it's not specified there, look for a patches-file definition.
     elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
       $this->getIO()->write('<info>Gathering patches from patch file.</info>');
-      $patches = file_get_contents($extra['patches-file']);
+      $patchesFile = $extra['composer-patches']['patches-file'];
+      $patches = file_get_contents($patchesFile);
       $patches = json_decode($patches, TRUE);
       $error = json_last_error();
       if ($error != 0) {
@@ -82,8 +83,7 @@ class PatchBaseCommand extends BaseCommand {
         throw new \Exception('There was an error in the supplied patches file:' . $msg);
       }
       if (isset($patches['patches'])) {
-        $patches = $patches['patches'];
-        return $patches;
+        return $patches['patches'];
       }
       elseif (!$patches) {
         throw new \Exception('There was an error in the supplied patch file');

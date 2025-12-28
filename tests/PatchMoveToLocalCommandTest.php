@@ -26,7 +26,7 @@ class PatchMoveToLocalCommandTest extends PatchCommandTestBase {
 
     // Set up composer.json with this remote patch.
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $json['extra']['patches'] = [
+    $json['extra']['composer-patches']['patches'] = [
       'vendor/package' => [
         'Fix something' => $url,
       ],
@@ -42,7 +42,7 @@ class PatchMoveToLocalCommandTest extends PatchCommandTestBase {
     ]);
     
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $newPath = $json['extra']['patches']['vendor/package']['Fix something'];
+    $newPath = $json['extra']['composer-patches']['patches']['vendor/package']['Fix something'];
     
     $this->assertStringContainsString('patches/fix-something-1.diff', $newPath);
     $this->assertFileExists($this->tempDir . '/' . $newPath);
@@ -55,8 +55,8 @@ class PatchMoveToLocalCommandTest extends PatchCommandTestBase {
   public function testMoveToLocalExternalFile() {
     $patchesFile = 'patches.json';
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $json['extra']['patches-file'] = $patchesFile;
-    unset($json['extra']['patches']);
+    $json['extra']['composer-patches']['patches-file'] = $patchesFile;
+    unset($json['extra']['composer-patches']['patches']);
     file_put_contents($this->composerJsonPath, json_encode($json));
 
     $remoteDir = $this->tempDir . '/remote/-/merge_requests';
@@ -96,7 +96,7 @@ class PatchMoveToLocalCommandTest extends PatchCommandTestBase {
     $url = 'https://example.com/regular.patch'; // Does not contain 'merge_requests/'
 
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $json['extra']['patches'] = [
+    $json['extra']['composer-patches']['patches'] = [
       'vendor/package' => [
         'Regular patch' => $url,
       ],
@@ -110,6 +110,6 @@ class PatchMoveToLocalCommandTest extends PatchCommandTestBase {
     ]);
 
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
-    $this->assertEquals($url, $json['extra']['patches']['vendor/package']['Regular patch']);
+    $this->assertEquals($url, $json['extra']['composer-patches']['patches']['vendor/package']['Regular patch']);
   }
 }

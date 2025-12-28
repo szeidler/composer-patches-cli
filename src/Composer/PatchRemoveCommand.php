@@ -2,8 +2,12 @@
 
 namespace szeidler\ComposerPatchesCLI\Composer;
 
+use Composer\DependencyResolver\Request;
+use Composer\Installer;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Composer\Json\JsonFile;
@@ -16,7 +20,8 @@ class PatchRemoveCommand extends PatchBaseCommand {
       ->setDescription('Remove a from a composer patch file.')
       ->setDefinition([
         new InputArgument('package', InputArgument::REQUIRED),
-        new InputArgument('description', InputArgument::REQUIRED)
+        new InputArgument('description', InputArgument::REQUIRED),
+        new InputOption('no-update', null, InputOption::VALUE_NONE, 'Do not run an update: as side effect patch will not be removed from the installed package.'),
       ]);
 
     parent::configure();
@@ -44,10 +49,10 @@ class PatchRemoveCommand extends PatchBaseCommand {
     if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
       $manipulator_filename = 'composer.json';
       $json_node = 'extra';
-      $json_name = 'patches';
+      $json_name = 'composer-patches.patches';
     }
     elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
-      $manipulator_filename = $extra['patches-file'];
+      $manipulator_filename = $extra['composer-patches']['patches-file'];
       $json_node = null;
       $json_name = 'patches';
     }
@@ -91,6 +96,19 @@ class PatchRemoveCommand extends PatchBaseCommand {
     }
 
     $output->writeln('The patch was successfully removed.');
+
+    if (!$input->getOption('no-update')) {
+      $application = $this->getApplication();
+      $application->setAutoExit(FALSE);
+      $output->writeln('<info>Relocking patches...</info>');
+      $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
+
+      $output->writeln('<info>Reinstalling package...</info>');
+      $application->run(new ArrayInput(['command' => 'reinstall', 'packages' => [$package]]), $output);
+
+      $output->writeln('<info>Repatching dependencies...</info>');
+      $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
+    }
 
     return 0;
   }
