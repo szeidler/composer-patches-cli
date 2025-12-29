@@ -123,6 +123,16 @@ Example:
 composer patch-remote-to-local patches
 ```
 
+### Patch Migrate
+
+```sh
+composer patch-migrate-config
+```
+
+The patch migrate command migrates your Composer Patches 1 configuration to the Composer Patches 2 format. It handles the migration of patches, ignored patches, patch levels (converted to package depths).
+
+After a successful migration, the command automatically runs `patches-relock` and `patches-repatch` to ensure your project is up-to-date with the new configuration.
+
 ## Credits
 
 Stephan Zeidler for [Ramsalt Lab AS](https://ramsalt.com)
