@@ -80,6 +80,36 @@ class PatchAddCommandTest extends PatchCommandTestBase {
   }
 
   /**
+   * Tests that Composer Patches 2 specific commands are NOT called when CP1 is detected.
+   */
+  public function testCP2CommandsNotCalledOnCP1() {
+    file_put_contents($this->composerJsonPath, json_encode([
+      'name' => 'test/project',
+      'require' => [
+        'cweagans/composer-patches' => '^1.7',
+      ],
+      'extra' => [
+        'patches' => [],
+      ],
+    ]));
+
+    $tester = $this->getCommandTester(PatchAddCommand::class);
+
+    $patchFile = $this->tempDir . '/fix.patch';
+    file_put_contents($patchFile, 'dummy patch content');
+
+    $tester->execute([
+      'package' => 'vendor/package',
+      'url' => $patchFile,
+      'description' => 'Fix something',
+    ]);
+
+    $output = $tester->getDisplay();
+    $this->assertStringNotContainsString('Relocking patches...', $output);
+    $this->assertStringNotContainsString('Repatching dependencies...', $output);
+  }
+
+  /**
    * Tests that a patch is added to an external patches file.
    */
   public function testPatchIsAddedToExternalFile() {

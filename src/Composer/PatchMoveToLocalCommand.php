@@ -149,10 +149,13 @@ class PatchMoveToLocalCommand extends PatchBaseCommand
 
             $application = $this->getApplication();
             $application->setAutoExit(FALSE);
-            $output->writeln('<info>Relocking patches...</info>');
-            $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
-            $output->writeln('<info>Repatching dependencies...</info>');
-            $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
+
+            if (!$this->isComposerPatches1()) {
+                $output->writeln('<info>Relocking patches...</info>');
+                $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
+                $output->writeln('<info>Repatching dependencies...</info>');
+                $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
+            }
         } else {
             throw new \Exception(
                 'Composer patches file could not be saved. Please check the permissions.'
