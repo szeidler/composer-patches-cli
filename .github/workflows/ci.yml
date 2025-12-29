@@ -6,11 +6,13 @@ on:
 
 jobs:
   test:
+    name: PHP ${{ matrix.php }} / Symfony ${{ matrix.symfony }} / Composer Patches ${{ matrix.composer-patches }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         php: ['8.2', '8.3', '8.4']
         symfony: ['^7.0', '^8.0']
+        composer-patches: ['^1.7', '^2.0']
         exclude:
           - php: '8.2'
             symfony: '^8.0'
@@ -32,7 +34,7 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: |
-          composer require "symfony/console:${{ matrix.symfony }}" --dev --no-update --no-interaction
+          composer require "symfony/console:${{ matrix.symfony }}" "cweagans/composer-patches:${{ matrix.composer-patches }}" --dev --no-update --no-interaction
           composer update --prefer-dist --no-progress
 
       # Run PHPUnit tests

@@ -9,6 +9,8 @@
     }
   },
   "extra": {
-    "patches": {}
+    "composer-patches": {
+      "patches": {}
+    }
   }
 }

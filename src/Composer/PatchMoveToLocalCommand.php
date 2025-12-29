@@ -2,6 +2,7 @@
 
 namespace szeidler\ComposerPatchesCLI\Composer;
 
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,8 +36,16 @@ class PatchMoveToLocalCommand extends PatchBaseCommand
         if ($this->getPatchType() === self::PATCHTYPE_ROOT) {
             $manipulator_filename = 'composer.json';
             $json_node = 'extra';
+            $json_name = 'composer-patches.patches';
+        } elseif ($this->getPatchType() === self::PATCHTYPE_ROOT_CP1) {
+            $manipulator_filename = 'composer.json';
+            $json_node = 'extra';
             $json_name = 'patches';
         } elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
+            $manipulator_filename = $extra['composer-patches']['patches-file'];
+            $json_node = null;
+            $json_name = 'patches';
+        } elseif ($this->getPatchType() === self::PATCHTYPE_FILE_CP1) {
             $manipulator_filename = $extra['patches-file'];
             $json_node = null;
             $json_name = 'patches';
@@ -137,6 +146,13 @@ class PatchMoveToLocalCommand extends PatchBaseCommand
             $this->getIO()->write(
                 '<info>Remote Composer patches got successfully moved to local files and got updated in the composer.json or composer.patches.json.</info>'
             );
+
+            $application = $this->getApplication();
+            $application->setAutoExit(FALSE);
+            $output->writeln('<info>Relocking patches...</info>');
+            $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
+            $output->writeln('<info>Repatching dependencies...</info>');
+            $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
         } else {
             throw new \Exception(
                 'Composer patches file could not be saved. Please check the permissions.'
