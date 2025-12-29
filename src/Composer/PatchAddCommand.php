@@ -2,6 +2,8 @@
 
 namespace szeidler\ComposerPatchesCLI\Composer;
 
+use Composer\DependencyResolver\Request;
+use Composer\Installer;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -146,10 +148,31 @@ class PatchAddCommand extends PatchBaseCommand {
     if (!$input->getOption('no-update')) {
       $application = $this->getApplication();
       $application->setAutoExit(FALSE);
-      $output->writeln('<info>Relocking patches...</info>');
-      $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
-      $output->writeln('<info>Repatching dependencies...</info>');
-      $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
+
+      if ($this->isComposerPatches1()) {
+        // Trigger install command after adding a patch.
+        $install = Installer::create($this->getIO(), $this->requireComposer());
+        $install->setUpdate(TRUE)
+          // Forward the option
+          ->setVerbose($input->getOption('verbose'))
+          // Only update the current package
+          ->setUpdateAllowList([$package])
+          // Don't update the dependencies of the patched package.
+          ->setUpdateAllowTransitiveDependencies(Request::UPDATE_ONLY_LISTED)
+          // Patches are always considered to be applied in "dev mode".
+          // This is also required to prevent composer from removing all installed
+          // dev dependencies.
+          ->setDevMode($updateDevMode)
+          ->run();
+      }
+      else {
+        $output->writeln('<info>Relocking patches...</info>');
+        $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
+        $output->writeln('<info>Repatching dependencies...</info>');
+        $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
+        $output->writeln('<info>Reinstalling package...</info>');
+        $application->run(new ArrayInput(['command' => 'reinstall', 'packages' => [$package]]), $output);
+      }
     }
 
     return 0;

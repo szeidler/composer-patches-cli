@@ -110,14 +110,15 @@ class PatchRemoveCommand extends PatchBaseCommand {
     if (!$input->getOption('no-update')) {
       $application = $this->getApplication();
       $application->setAutoExit(FALSE);
-      $output->writeln('<info>Relocking patches...</info>');
-      $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
 
+      if (!$this->isComposerPatches1()) {
+        $output->writeln('<info>Relocking patches...</info>');
+        $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
+        $output->writeln('<info>Repatching dependencies...</info>');
+        $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
+      }
       $output->writeln('<info>Reinstalling package...</info>');
       $application->run(new ArrayInput(['command' => 'reinstall', 'packages' => [$package]]), $output);
-
-      $output->writeln('<info>Repatching dependencies...</info>');
-      $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
     }
 
     return 0;
