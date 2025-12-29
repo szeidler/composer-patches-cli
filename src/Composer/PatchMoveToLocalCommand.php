@@ -37,8 +37,16 @@ class PatchMoveToLocalCommand extends PatchBaseCommand
             $manipulator_filename = 'composer.json';
             $json_node = 'extra';
             $json_name = 'composer-patches.patches';
+        } elseif ($this->getPatchType() === self::PATCHTYPE_ROOT_CP1) {
+            $manipulator_filename = 'composer.json';
+            $json_node = 'extra';
+            $json_name = 'patches';
         } elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
             $manipulator_filename = $extra['composer-patches']['patches-file'];
+            $json_node = null;
+            $json_name = 'patches';
+        } elseif ($this->getPatchType() === self::PATCHTYPE_FILE_CP1) {
+            $manipulator_filename = $extra['patches-file'];
             $json_node = null;
             $json_name = 'patches';
         } else {

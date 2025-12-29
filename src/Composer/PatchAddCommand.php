@@ -88,6 +88,11 @@ class PatchAddCommand extends PatchBaseCommand {
       $json_node = null;
       $json_name = 'patches';
     }
+    elseif ($this->getPatchType() === self::PATCHTYPE_FILE_CP1) {
+      $manipulator_filename = $extra['patches-file'];
+      $json_node = null;
+      $json_name = 'patches';
+    }
     else {
       throw new \Exception('Composer patches seems to be not enabled. Please enable composer patches first.');
     }
@@ -134,7 +139,7 @@ class PatchAddCommand extends PatchBaseCommand {
 
     // Store the manipulated JSON file.
     if (!file_put_contents($manipulator_filename, $manipulator->getContents())) {
-      throw new \Exception($extra['patches-file'] . ' file could not be saved. Please check the permissions.');
+      throw new \Exception($manipulator_filename . ' file could not be saved. Please check the permissions.');
     }
     $output->writeln('The patch was successfully added.');
 

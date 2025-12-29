@@ -82,6 +82,34 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
   }
 
   /**
+   * Tests that patching is enabled with an external file (Composer Patches 1 style).
+   */
+  public function testEnableWithExternalFileComposerPatches1() {
+    // Mock Composer Patches 1 in requires
+    $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
+    $json['require']['cweagans/composer-patches'] = '1.7.3';
+    file_put_contents($this->composerJsonPath, json_encode($json));
+
+    $tester = $this->getCommandTester(PatchEnableCommand::class);
+    $patchesFilename = 'patches.json';
+
+    $tester->execute([
+      '--file' => $patchesFilename,
+    ]);
+
+    $output = $tester->getDisplay();
+    $this->assertStringContainsString('The composer patches file was created.', $output);
+    $this->assertStringContainsString('The composer patches functionality was enabled successfully.', $output);
+
+    $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
+    $this->assertEquals($patchesFilename, $json['extra']['patches-file']);
+    $this->assertFileExists($this->tempDir . '/' . $patchesFilename);
+
+    $patchesJson = json_decode(file_get_contents($this->tempDir . '/' . $patchesFilename), TRUE);
+    $this->assertArrayHasKey('patches', $patchesJson);
+  }
+
+  /**
    * Tests that it fails if patches-file is already defined.
    */
   public function testEnableAlreadyDefined() {

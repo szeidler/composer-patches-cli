@@ -61,6 +61,11 @@ class PatchRemoveCommand extends PatchBaseCommand {
       $json_node = null;
       $json_name = 'patches';
     }
+    elseif ($this->getPatchType() === self::PATCHTYPE_FILE_CP1) {
+      $manipulator_filename = $extra['patches-file'];
+      $json_node = null;
+      $json_name = 'patches';
+    }
     else {
       throw new \Exception('Composer patches seems to be not enabled. Please enable composer patches first.');
     }
@@ -90,14 +95,14 @@ class PatchRemoveCommand extends PatchBaseCommand {
     if ($this->getPatchType() === self::PATCHTYPE_ROOT || $this->getPatchType() === self::PATCHTYPE_ROOT_CP1) {
       $manipulator->addSubNode($json_node, $json_name, $patches);
     }
-    elseif ($this->getPatchType() === self::PATCHTYPE_FILE) {
+    elseif ($this->getPatchType() === self::PATCHTYPE_FILE || $this->getPatchType() === self::PATCHTYPE_FILE_CP1) {
       $manipulator->removeMainKey('patches');
       $manipulator->addMainKey('patches', $patches);
     }
 
     // Store the manipulated JSON file.
     if (!file_put_contents($manipulator_filename, $manipulator->getContents())) {
-      throw new \Exception($extra['patches-file'] . ' file could not be saved. Please check the permissions.');
+      throw new \Exception($manipulator_filename . ' file could not be saved. Please check the permissions.');
     }
 
     $output->writeln('The patch was successfully removed.');

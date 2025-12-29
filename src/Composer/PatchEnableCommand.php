@@ -49,13 +49,18 @@ class PatchEnableCommand extends PatchBaseCommand {
           throw new \Exception('Patch could not be created.');
         }
       }
-      $manipulator->addProperty('extra.composer-patches.patches-file', $patches_filename);
+
+      if ($this->isComposerPatches1()) {
+        $manipulator->addProperty('extra.patches-file', $patches_filename);
+      }
+      else {
+        $manipulator->addProperty('extra.composer-patches.patches-file', $patches_filename);
+      }
     }
     else {
       // Create an empty patches definition in the root composer.json.
       if (!isset($extra['patches']) && !isset($extra['composer-patches']['patches'])) {
-        $version = $this->getComposerPatchesVersion();
-        if ($version && version_compare($version, '2.0.0', '<')) {
+        if ($this->isComposerPatches1()) {
           $manipulator->addProperty('extra.patches', []);
         }
         else {
@@ -63,9 +68,6 @@ class PatchEnableCommand extends PatchBaseCommand {
         }
       }
     }
-
-    // Enable patching.
-    $test = $manipulator->getContents();
 
     // Store the manipulated JSON file.
     if (!file_put_contents($composer_filename, $manipulator->getContents())) {
