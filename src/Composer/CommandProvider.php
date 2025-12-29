@@ -16,6 +16,7 @@ class CommandProvider implements CommandProviderCapability {
       new PatchRemoveCommand(),
       new PatchListCommand(),
       new PatchMoveToLocalCommand(),
+      new PatchMigrateCommand(),
     ];
   }
 }
