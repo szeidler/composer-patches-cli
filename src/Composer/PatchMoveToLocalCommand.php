@@ -147,14 +147,11 @@ class PatchMoveToLocalCommand extends PatchBaseCommand
                 '<info>Remote Composer patches got successfully moved to local files and got updated in the composer.json or composer.patches.json.</info>'
             );
 
-            $application = $this->getApplication();
-            $application->setAutoExit(FALSE);
-
             if (!$this->isComposerPatches1()) {
                 $output->writeln('<info>Relocking patches...</info>');
-                $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
+                $this->runPatchesRelock();
                 $output->writeln('<info>Repatching dependencies...</info>');
-                $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
+                $this->runRepatch();
             }
         } else {
             throw new \Exception(

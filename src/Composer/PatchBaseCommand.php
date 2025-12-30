@@ -2,9 +2,14 @@
 
 namespace szeidler\ComposerPatchesCLI\Composer;
 
+use Composer\DependencyResolver\Operation\UninstallOperation;
 use Composer\Factory;
 use Composer\Command\BaseCommand;
+use Composer\Json\JsonFile;
 use Composer\Semver\Comparator;
+use Composer\Installer;
+use Composer\DependencyResolver\Request;
+use cweagans\Composer\Plugin\Patches;
 
 class PatchBaseCommand extends BaseCommand {
 
@@ -85,6 +90,93 @@ class PatchBaseCommand extends BaseCommand {
   protected function isComposerPatches1() {
     $version = $this->getComposerPatchesVersion();
     return $version && version_compare($version, '2.0.0', '<');
+  }
+
+  /**
+   * Get the Patches plugin instance.
+   */
+  protected function getPatchesPluginInstance() {
+    foreach ($this->requireComposer()->getPluginManager()->getPlugins() as $plugin) {
+      $className = get_class($plugin);
+      if (str_starts_with($className, 'cweagans\Composer\Plugin\Patches')) {
+        return $plugin;
+      }
+    }
+    return NULL;
+  }
+
+  /**
+   * Run the patches-relock command.
+   */
+  protected function runPatchesRelock(): void {
+    $plugin = $this->getPatchesPluginInstance();
+    if ($plugin) {
+      if (file_exists($plugin->getLockFile()->getPath())) {
+        unlink($plugin->getLockFile()->getPath());
+      }
+      $plugin->createNewPatchesLock();
+    }
+  }
+
+  /**
+   * Run the patches-repatch command.
+   */
+  protected function runRepatch(): void {
+    $plugin = $this->getPatchesPluginInstance();
+    if ($plugin) {
+      $plugin->loadLockedPatches();
+      $patchCollection = $plugin->getPatchCollection();
+      if ($patchCollection) {
+        $localRepository = $this->requireComposer()
+          ->getRepositoryManager()
+          ->getLocalRepository();
+
+        $patched_packages = $patchCollection->getPatchedPackages();
+        $packages = array_filter($localRepository->getPackages(), function ($val) use ($patched_packages) {
+          return in_array($val->getName(), $patched_packages);
+        });
+
+        $promises = [];
+        foreach ($packages as $package) {
+          $uninstallOperation = new UninstallOperation($package);
+          $promises[] = $this->requireComposer()
+            ->getInstallationManager()
+            ->uninstall($localRepository, $uninstallOperation);
+        }
+
+        $promises = array_filter($promises);
+        if (!empty($promises)) {
+          $this->requireComposer()->getLoop()->wait($promises);
+        }
+
+        $install = Installer::create($this->getIO(), $this->requireComposer());
+        $install->run();
+      }
+    }
+  }
+
+  /**
+   * Run the reinstall command for a package.
+   *
+   * @param string $package
+   * @param bool $devMode
+   */
+  protected function runReinstall(string $package, bool $devMode = TRUE): void {
+    $install = Installer::create($this->getIO(), $this->requireComposer());
+    $install->setUpdate(TRUE)
+      ->setUpdateAllowList([$package])
+      ->setUpdateAllowTransitiveDependencies(Request::UPDATE_ONLY_LISTED)
+      ->setDevMode($devMode)
+      ->run();
+  }
+
+  /**
+   * Updates the lock file hash.
+   */
+  protected function updateLockFile(): void {
+    $composerJsonPath = Factory::getComposerFile();
+    $composerJson = new JsonFile($composerJsonPath);
+    $this->requireComposer()->getLocker()->updateHash($composerJson);
   }
 
   /**

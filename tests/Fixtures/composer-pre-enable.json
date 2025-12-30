@@ -1,0 +1,11 @@
+{
+  "name": "szeidler/composer-patches-cli-test-project",
+  "description": "Project for testing the extension.",
+  "type": "project",
+  "license": "MIT",
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
+  }
+}
