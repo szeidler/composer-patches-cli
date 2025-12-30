@@ -25,8 +25,14 @@ class PatchMigrateCommandTest extends PatchCommandTestBase {
     
     // Register real CP2 commands and plugin if using Composer Patches 2.
     if (class_exists('cweagans\Composer\Command\RelockCommand')) {
-      $application->add(new \cweagans\Composer\Command\RelockCommand());
-      $application->add(new \cweagans\Composer\Command\RepatchCommand());
+      if (method_exists($application, 'addCommand')) {
+        $application->addCommand(new \cweagans\Composer\Command\RelockCommand());
+        $application->addCommand(new \cweagans\Composer\Command\RepatchCommand());
+      }
+      else {
+        $application->add(new \cweagans\Composer\Command\RelockCommand());
+        $application->add(new \cweagans\Composer\Command\RepatchCommand());
+      }
 
       // Register the Patches plugin with the composer instance.
       $plugin = new Patches();
