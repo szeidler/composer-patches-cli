@@ -14,6 +14,7 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
    * Tests that patching is enabled in composer.json (Composer Patches 2 style).
    */
   public function testEnableComposerPatches2() {
+    copy(__DIR__ . '/Fixtures/composer-pre-enable.json', $this->composerJsonPath);
     // Ensure we start without patches
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
     unset($json['extra']['composer-patches']['patches']);
@@ -39,6 +40,7 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
    * Tests that patching is enabled in composer.json (Composer Patches 1 style).
    */
   public function testEnableComposerPatches1() {
+    copy(__DIR__ . '/Fixtures/composer-pre-enable.json', $this->composerJsonPath);
     // Mock Composer Patches 1 in requires
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
     $json['require']['cweagans/composer-patches'] = '1.7.3';
@@ -62,6 +64,7 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
    * Tests that patching is enabled with an external file.
    */
   public function testEnableWithExternalFile() {
+    copy(__DIR__ . '/Fixtures/composer-pre-enable.json', $this->composerJsonPath);
     $tester = $this->getCommandTester(PatchEnableCommand::class);
     $patchesFilename = 'patches.json';
 
@@ -85,6 +88,7 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
    * Tests that patching is enabled with an external file (Composer Patches 1 style).
    */
   public function testEnableWithExternalFileComposerPatches1() {
+    copy(__DIR__ . '/Fixtures/composer-pre-enable.json', $this->composerJsonPath);
     // Mock Composer Patches 1 in requires
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
     $json['require']['cweagans/composer-patches'] = '1.7.3';
@@ -113,6 +117,8 @@ class PatchEnableCommandTest extends PatchCommandTestBase {
    * Tests that it fails if patches-file is already defined.
    */
   public function testEnableAlreadyDefined() {
+    copy(__DIR__ . '/Fixtures/composer-pre-enable.json', $this->composerJsonPath);
+
     $json = json_decode(file_get_contents($this->composerJsonPath), TRUE);
     $json['extra']['composer-patches']['patches-file'] = 'existing.json';
     file_put_contents($this->composerJsonPath, json_encode($json));

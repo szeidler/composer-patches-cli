@@ -146,32 +146,15 @@ class PatchAddCommand extends PatchBaseCommand {
     $output->writeln('The patch was successfully added.');
 
     if (!$input->getOption('no-update')) {
-      $application = $this->getApplication();
-      $application->setAutoExit(FALSE);
-
       if ($this->isComposerPatches1()) {
         // Trigger install command after adding a patch.
-        $install = Installer::create($this->getIO(), $this->requireComposer());
-        $install->setUpdate(TRUE)
-          // Forward the option
-          ->setVerbose($input->getOption('verbose'))
-          // Only update the current package
-          ->setUpdateAllowList([$package])
-          // Don't update the dependencies of the patched package.
-          ->setUpdateAllowTransitiveDependencies(Request::UPDATE_ONLY_LISTED)
-          // Patches are always considered to be applied in "dev mode".
-          // This is also required to prevent composer from removing all installed
-          // dev dependencies.
-          ->setDevMode($updateDevMode)
-          ->run();
+        $this->runReinstall($package, $updateDevMode);
       }
       else {
         $output->writeln('<info>Relocking patches...</info>');
-        $application->run(new ArrayInput(['command' => 'patches-relock']), $output);
+        $this->runPatchesRelock();
         $output->writeln('<info>Repatching dependencies...</info>');
-        $application->run(new ArrayInput(['command' => 'patches-repatch']), $output);
-        $output->writeln('<info>Reinstalling package...</info>');
-        $application->run(new ArrayInput(['command' => 'reinstall', 'packages' => [$package]]), $output);
+        $this->runRepatch();
       }
     }
 

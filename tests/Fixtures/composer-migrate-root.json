@@ -1,0 +1,24 @@
+{
+    "name": "szeidler/composer-patches-cli-test",
+    "description": "Test package",
+    "require": {
+        "cweagans/composer-patches": "^2.0"
+    },
+    "extra": {
+        "composer-exit-on-patch-failure": true,
+        "patchLevel": {
+            "drupal/core": "-p2"
+        },
+        "enable-patching": true,
+        "patches": {
+            "vendor/package": {
+                "test patch": "test.patch"
+            }
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "cweagans/composer-patches": true
+        }
+    }
+}
