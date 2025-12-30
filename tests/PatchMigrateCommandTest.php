@@ -22,14 +22,16 @@ class PatchMigrateCommandTest extends PatchCommandTestBase {
     $this->composer = Factory::create($io, $this->composerJsonPath);
     $application = new \Composer\Console\Application();
     $application->setAutoExit(FALSE);
+    
+    // Register real CP2 commands and plugin if using Composer Patches 2.
+    if (class_exists('cweagans\Composer\Command\RelockCommand')) {
+      $application->add(new \cweagans\Composer\Command\RelockCommand());
+      $application->add(new \cweagans\Composer\Command\RepatchCommand());
 
-    // Register real CP2 commands.
-    $application->add(new \cweagans\Composer\Command\RelockCommand());
-    $application->add(new \cweagans\Composer\Command\RepatchCommand());
-
-    // Register the Patches plugin with the composer instance.
-    $plugin = new Patches();
-    $this->composer->getPluginManager()->addPlugin($plugin);
+      // Register the Patches plugin with the composer instance.
+      $plugin = new Patches();
+      $this->composer->getPluginManager()->addPlugin($plugin);
+    }
 
     $command = new class extends PatchMigrateCommand {
       protected function runRepatch(): void {
